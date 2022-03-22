@@ -11,7 +11,7 @@ export class AuthGuard implements CanActivate {
     public readonly service: AuthService;
 
     public async canActivate(context: ExecutionContext): Promise<boolean> | never {
-        const request: Request = context.switchToHttp().getRequest();
+        const request = context.switchToHttp().getRequest();
         const authorization: string = request.headers['authorization'];
 
         if(!authorization) {
@@ -25,11 +25,11 @@ export class AuthGuard implements CanActivate {
         }
 
         const token: string = bearer[1];
-
+        
         const { status, userId }: ValidateResponse = await this.service.validate(token);
 
-        // request.user = userId;
-
+        request.body.user_id = userId;
+        
         if(status !== HttpStatus.OK) {
             throw new UnauthorizedException();
         }
